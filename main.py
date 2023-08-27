@@ -3,16 +3,19 @@ from bs4 import BeautifulSoup
 
 URL = "https://web.archive.org/web/20200518073855/https://www.empireonline.com/movies/features/best-movies-2/"
 
+# Write your code below this line 👇
 response = requests.get(URL)
-website_html = response.text
+html = response.text
 
-soup = BeautifulSoup(website_html, "html.parser")
+soup = BeautifulSoup(html, 'html.parser')
+all_movies = soup.find_all(name='h3', class_='title')
 
-all_movies = soup.find_all(name="h3", class_="title")
-movie_titles = [movie.getText() for movie in all_movies]
-movies = movie_titles[::-1]
+with open('movies.txt', 'w', encoding='utf-8') as file:
+    for movie in all_movies:
+        try:
+            name = movie.text.split(') ')[1]
+        except IndexError:
+            name = movie.text.split(': ')[1]
+        finally:
+            file.write(f"{name}\n")
 
-with open("movies.txt", mode="w") as file:
-    for movie in movies:
-        print(movie)
-        file.write(f"{movie}\n")
